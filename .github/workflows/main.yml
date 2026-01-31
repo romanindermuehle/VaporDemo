@@ -1,0 +1,38 @@
+name: CI/CD Pipeline
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  # Job zum Bauen und Pushen des Docker-Images
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/movies-app:latest
