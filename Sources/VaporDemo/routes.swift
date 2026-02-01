@@ -24,6 +24,24 @@ func routes(_ app: Application) throws {
         app.logger.info("This is some info")
         return "Info logged"
     }
+    
+    app.get("500") { req async throws -> String in
+        throw Abort(.internalServerError)
+    }
+    
+    app.get("404") { req async throws -> String in
+        throw Abort(.notFound)
+    }
+    
+    app.get("400") { req async throws -> String in
+        throw Abort(.badRequest)
+    }
+    
+    app.get("200") { req in
+        return HTTPStatus.ok
+    }
+    
+    
 
     try app.register(collection: TodoController())
 }
